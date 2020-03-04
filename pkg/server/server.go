@@ -1,44 +1,27 @@
 package server
 
 import (
+	"github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
-	"github.com/gorilla/websocket"
+	"hero_realms_server/pkg/ws_connecting"
 	"log"
 	"net/http"
+	"os"
 )
 
-var upgrader = websocket.Upgrader{}
 
-func echo(w http.ResponseWriter, r *http.Request) {
-	c, err := upgrader.Upgrade(w, r, nil)
-	if err != nil {
-		log.Print("upgrade:", err)
-		return
-	}
-	defer c.Close()
-	for {
-		mt, message, err := c.ReadMessage()
-		if err != nil {
-			log.Println("read:", err)
-			break
-		}
-		log.Printf("recv: %s", message)
-		err = c.WriteMessage(mt, message)
-		if err != nil {
-			log.Println("write:", err)
-			break
-		}
-	}
-}
 
-func Hw(w http.ResponseWriter, r *http.Request) {
-	w.WriteHeader(http.StatusOK)
-	_, _ = w.Write([]byte("hello world"))
+func loggingMiddleware(next http.Handler) http.Handler {
+	return handlers.LoggingHandler(os.Stdout, next)
 }
 
 func Start()  {
 	r := mux.NewRouter()
-	r.HandleFunc("/", Hw)
-	r.HandleFunc("echo", echo)
+	r.Use(loggingMiddleware)
+	r.HandleFunc("/game/{playersNum:[2-4]}", ws_connecting.CreateGameHandler)
+	r.HandleFunc("/join", ws_connecting.JoinGameHandler)
+	static := r.PathPrefix("/").Subrouter()
+	static.PathPrefix("/static/").Handler(http.StripPrefix("/static/",http.FileServer(http.Dir("./static"))))
+	static.PathPrefix("/").Handler(http.FileServer(http.Dir("./static/html")))
 	log.Fatal(http.ListenAndServe(":8080", r))
 }
