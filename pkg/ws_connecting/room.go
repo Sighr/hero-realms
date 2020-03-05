@@ -1,12 +1,13 @@
 package ws_connecting
 
 import (
-	"github.com/gorilla/mux"
-	"github.com/gorilla/websocket"
-	"hero_realms_server/pkg/game"
 	"log"
 	"net/http"
 	"strconv"
+
+	"github.com/Sighr/hero-realms/pkg/game"
+	"github.com/gorilla/mux"
+	"github.com/gorilla/websocket"
 )
 
 var upgrader = websocket.Upgrader{}
@@ -22,15 +23,15 @@ type Room struct {
 
 var room Room
 
-func GetWSReadHandler(ch chan string, ready chan *websocket.Conn, end chan struct{}) func (http.ResponseWriter, *http.Request) {
-	ReadConnection := func (w http.ResponseWriter, r *http.Request) {
+func GetWSReadHandler(ch chan string, ready chan *websocket.Conn, end chan struct{}) func(http.ResponseWriter, *http.Request) {
+	ReadConnection := func(w http.ResponseWriter, r *http.Request) {
 		c, err := upgrader.Upgrade(w, r, nil)
 		if err != nil {
 			log.Print("upgrade err:", err)
 			return
 		}
 		defer c.Close()
-		ready<-c
+		ready <- c
 		var done = false
 		for !done {
 			select {
@@ -45,7 +46,7 @@ func GetWSReadHandler(ch chan string, ready chan *websocket.Conn, end chan struc
 				}
 				// maybe change channel type to Command struct and deserialize here
 				log.Printf("recv: %s", message)
-				ch<-string(message)
+				ch <- string(message)
 			}
 		}
 	}
@@ -78,7 +79,6 @@ func CreateGameHandler(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-
 func (r *Room) WaitAll() {
 	for i := 0; i < r.maxPlayers; i++ {
 		room.conns[i] = <-room.connChan[i]
@@ -97,7 +97,7 @@ func JoinGameHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	room.currentPlayers++
 	GetWSReadHandler(
-		room.dataChan[room.currentPlayers - 1],
-		room.connChan[room.currentPlayers - 1],
-		room.endChan[room.currentPlayers - 1])(w, r)
+		room.dataChan[room.currentPlayers-1],
+		room.connChan[room.currentPlayers-1],
+		room.endChan[room.currentPlayers-1])(w, r)
 }

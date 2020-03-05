@@ -1,9 +1,9 @@
 package server
 
 import (
+	"github.com/Sighr/hero-realms/pkg/ws_connecting"
 	"github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
-	"hero_realms_server/pkg/ws_connecting"
 	"log"
 	"net/http"
 	"os"

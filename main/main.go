@@ -1,7 +1,7 @@
 package main
 
 import (
-	"hero_realms_server/pkg/server"
+	"github.com/Sighr/hero-realms/pkg/server"
 	"math/rand"
 	"time"
 )
