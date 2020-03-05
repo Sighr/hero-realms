@@ -7,27 +7,37 @@ function setupField() {
     before_play_container.parentNode.removeChild(before_play_container);
 }
 
-host_button.addEventListener("click", () => {
-    const ws = new WebSocket("ws://localhost:8080/game/2");
-    ws.addEventListener("open", () => {
-        ws.send("old man's here");
-    });
+function extracted(ws) {
     ws.addEventListener("close", () => {
         console.log("ws closed");
     });
     setupField();
     ws.addEventListener("message", (message) => {
-        if(message.data === "end_of_game") {
-            ws.close(1000);
-            console.log(ws.readyState);
-            while(ws.readyState !== 3) {
+        function signal_readyState() {
+            setTimeout(() => {
                 console.log(ws.readyState);
-            }
+                if (ws.readyState !== 3) {
+                    signal_readyState();
+                }
+            }, 5000);
+        }
+
+        if (message.data === "end_of_game") {
+            ws.close(1000);
+            signal_readyState();
         }
         const div = document.createElement('div');
         div.innerText = message.data;
         append_container.appendChild(div);
     });
+}
+
+host_button.addEventListener("click", () => {
+    const ws = new WebSocket("ws://localhost:8080/game/2");
+    ws.addEventListener("open", () => {
+        ws.send("old man's here");
+    });
+    extracted(ws);
 });
 
 join_button.addEventListener("click", () => {
@@ -35,20 +45,5 @@ join_button.addEventListener("click", () => {
     ws.addEventListener("open", () => {
         ws.send("player here");
     });
-    ws.addEventListener("close", () => {
-        console.log("ws closed");
-    });
-    setupField();
-    ws.addEventListener("message", (message) => {
-        if(message.data === "end_of_game") {
-            ws.close(1000);
-            console.log(ws.readyState);
-            while(ws.readyState !== 3) {
-                console.log(ws.readyState);
-            }
-        }
-        const div = document.createElement('div');
-        div.innerText = message.data;
-        append_container.appendChild(div);
-    });
+    extracted(ws);
 });

@@ -37,7 +37,9 @@ func GetWSReadHandler(ch chan string, ready chan *websocket.Conn, end chan struc
 			select {
 			case <-end:
 				done = true
+				log.Println("got to the end")
 			default:
+				log.Println("Started reading")
 				_, message, err := c.ReadMessage()
 				if err != nil {
 					log.Println("read err:", err)
@@ -49,6 +51,7 @@ func GetWSReadHandler(ch chan string, ready chan *websocket.Conn, end chan struc
 				ch <- string(message)
 			}
 		}
+		log.Println("connection closed")
 	}
 	return ReadConnection
 }
@@ -71,22 +74,30 @@ func CreateGameHandler(w http.ResponseWriter, r *http.Request) {
 	readHandler := GetWSReadHandler(room.dataChan[0], room.connChan[0], room.endChan[0])
 	go readHandler(w, r)
 	room.WaitAll()
-	game.RunGame(game.Game{})
+	game.RunGame(game.Game{DataChan: room.dataChan})
 	//close connections
-	for idx := range room.endChan {
-		_ = room.conns[idx].WriteMessage(websocket.TextMessage, []byte("end_of_game"))
-		close(room.endChan[idx])
-	}
+	room.CloseConnections()
 }
 
 func (r *Room) WaitAll() {
 	for i := 0; i < r.maxPlayers; i++ {
-		room.conns[i] = <-room.connChan[i]
-		close(room.connChan[i])
+		r.conns[i] = <-r.connChan[i]
+		close(r.connChan[i])
 	}
 }
 
+func (r *Room) CloseConnections() {
+
+	for idx := range r.endChan {
+		_ = r.conns[idx].WriteMessage(websocket.TextMessage, []byte("end_of_game"))
+		close(r.endChan[idx])
+	}
+	// close room
+}
+
 func JoinGameHandler(w http.ResponseWriter, r *http.Request) {
+	// instantiate room:
+	// room := rooms[last]
 	if room.conns == nil {
 		// there will be no room var, so it'll be deleted
 		return
