@@ -2,10 +2,18 @@ const before_play_container = document.getElementsByClassName("before_play")[0];
 const host_button = document.getElementById("host");
 const join_button = document.getElementById("join");
 const append_container = document.getElementById("append_here");
+const input = document.getElementById("input");
+const send = document.getElementById("send");
 
 function setupField() {
     before_play_container.parentNode.removeChild(before_play_container);
 }
+
+let sock;
+send.addEventListener("click", () => {
+    sock.send(input.value);
+    input.value = "";
+});
 
 function extracted(ws) {
     ws.addEventListener("close", () => {
@@ -33,7 +41,8 @@ function extracted(ws) {
 }
 
 host_button.addEventListener("click", () => {
-    const ws = new WebSocket("ws://localhost:8080/game/2");
+    const ws = new WebSocket("ws://localhost:8080/game/sample/2");
+    sock = ws;
     ws.addEventListener("open", () => {
         ws.send("old man's here");
     });
@@ -41,7 +50,8 @@ host_button.addEventListener("click", () => {
 });
 
 join_button.addEventListener("click", () => {
-    const ws = new WebSocket("ws://localhost:8080/join");
+    const ws = new WebSocket("ws://localhost:8080/join/sample");
+    sock = ws;
     ws.addEventListener("open", () => {
         ws.send("player here");
     });
