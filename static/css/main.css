@@ -1,0 +1,21 @@
+@import "../Components/Card/Card.css";
+@import "../Components/Board/Board.css";
+@import "../Components/Field/Field.css";
+
+img {
+    width: inherit;
+    height: inherit;
+    max-height: 100%;
+    max-width: 100%;
+}
+
+.centered {
+    top: 0;
+    margin: auto;
+    /*background-color: blue;*/
+}
+
+.main-back_img {
+    position: absolute;
+    z-index: -1;
+}
