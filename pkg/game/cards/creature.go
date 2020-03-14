@@ -1,6 +1,7 @@
 package cards
 
 type Creature struct {
-	hp int
+	hp     int
 	rotate Action
+	guard  bool
 }

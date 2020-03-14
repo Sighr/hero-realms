@@ -1,8 +1,9 @@
 package game
 
 import (
+	"github.com/Sighr/hero-realms/pkg/game/cards"
+	"github.com/Sighr/hero-realms/pkg/game/player"
 	"log"
-	"time"
 )
 
 type Game struct {
@@ -11,21 +12,33 @@ type Game struct {
 	BroadcastChan chan<- string
 	SendChan      []chan string
 	PlayersNum    int
+	// game part
+	Players       []*player.Player
+	Market        *cards.Container
+	MarketStack   *cards.Container
+	Sacrificed    *cards.Container
+	CurrentPlayer *player.Player
 }
 
-func (g Game) RunGame() {
+func (g *Game) RunGame() {
+	g.InitGame()
 	log.Println("game started")
-	ticker := time.NewTicker(20 * time.Second)
+	//ticker := time.NewTicker(20 * time.Second)
 	done := false
 	for !done {
 		select {
 		case message := <-g.RecvChan:
+			if message == "end_of_game" {
+				done = true
+			}
 			g.BroadcastChan <- message
-		case <-ticker.C:
-			done = true
+			//case <-ticker.C:
+			//	done = true
 		}
-
 	}
-	//time.Sleep(20 * time.Second)
 	log.Println("game ended")
+}
+
+func (g *Game) InitGame() {
+	// all initialization part
 }

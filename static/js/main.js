@@ -41,7 +41,7 @@ function extracted(ws) {
 }
 
 host_button.addEventListener("click", () => {
-    const ws = new WebSocket("ws://localhost:8080/game/sample/2");
+    const ws = new WebSocket("ws://abc86d6f.ngrok.io/game/sample/2");
     sock = ws;
     ws.addEventListener("open", () => {
         ws.send("old man's here");
@@ -50,7 +50,7 @@ host_button.addEventListener("click", () => {
 });
 
 join_button.addEventListener("click", () => {
-    const ws = new WebSocket("ws://localhost:8080/join/sample");
+    const ws = new WebSocket("ws://abc86d6f.ngrok.io/join/sample");
     sock = ws;
     ws.addEventListener("open", () => {
         ws.send("player here");
