@@ -1,5 +1,8 @@
 import BaseComponent from "../BaseComponent.js";
 
+/**
+ * class for data that is unique to specific player
+ */
 export default class Field extends BaseComponent {
     constructor() {
         // here should be drawing of all player's field:

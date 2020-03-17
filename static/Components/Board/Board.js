@@ -1,7 +1,15 @@
 import BaseComponent from "../BaseComponent.js";
 import Field from "../Field/Field.js";
 
+/**
+ * class for data that is shared between players:
+ * gems, market, market deck, sacrifice pull
+ */
 export default class Board extends BaseComponent {
+    /**
+     *
+     * @param playerNum - number of players
+     */
     constructor(playerNum) {
         super();
         this.root.classList.add('board-root');
