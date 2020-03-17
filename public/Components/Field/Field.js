@@ -11,7 +11,7 @@ export default class Field extends BaseComponent {
         this.root.classList.add('field-root');
         const img = document.createElement('img');
         this.root.appendChild(img);
-        img.src = `/static/img/field.jpg`;
+        img.src = `/public/img/field.jpg`;
         img.classList.add('field-img');
         img.classList.add('main-back_img');
         // should implement hierarchy elements

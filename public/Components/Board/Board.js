@@ -16,7 +16,7 @@ export default class Board extends BaseComponent {
 
         const img = document.createElement('img');
         this.root.appendChild(img);
-        img.src = `/static/img/board.jpg`;
+        img.src = `/public/img/board.jpg`;
         img.classList.add('board-img');
         img.classList.add('main-back_img');
 
